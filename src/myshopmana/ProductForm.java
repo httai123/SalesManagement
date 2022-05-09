@@ -67,20 +67,20 @@ public class ProductForm extends javax.swing.JFrame {
         }
         return data;
     }
-    public void show_product(){
-        ArrayList<Product> products = datalist();
-        DefaultTableModel model = (DefaultTableModel)productTable.getModel();
-        Object[] row = new Object[6];
-        for(int i= 0;i<products.size();i++){
-            row[0] = products.get(i).getProductID();
-            row[1] = products.get(i).getProductName();
-            row[2] = products.get(i).getProductCategory();
-            row[3] = products.get(i).getProductUnit();
-            row[5] = products.get(i).getPrice();
-            row[4] = products.get(i).getQuantity();
-            model.addRow(row);
-        }
-    }
+//    public void show_product(){
+//        ArrayList<Product> products = datalist();
+//        DefaultTableModel model = (DefaultTableModel)productTable.getModel();
+//        Object[] row = new Object[6];
+//        for(int i= 0;i<products.size();i++){
+//            row[0] = products.get(i).getProductID();
+//            row[1] = products.get(i).getProductName();
+//            row[2] = products.get(i).getProductCategory();
+//            row[3] = products.get(i).getProductUnit();
+//            row[5] = products.get(i).getPrice();
+//            row[4] = products.get(i).getQuantity();
+//            model.addRow(row);
+//        }
+//    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -415,10 +415,10 @@ public class ProductForm extends javax.swing.JFrame {
         int row = productTable.getSelectedRow();
         idTx.setText(model.getValueAt(row, 0).toString());
         productNameTx.setText(model.getValueAt(row, 1).toString());
-        CategoryTx.setSelectedItem(model.getValueAt(row, 2));
-        unitTx.setText(model.getValueAt(row, 3).toString());
+        CategoryTx.setSelectedItem(model.getValueAt(row, 5));
+        unitTx.setText(model.getValueAt(row, 2).toString());
         quantityTx.setText(model.getValueAt(row, 4).toString());
-        priceTx.setText(model.getValueAt(row, 5).toString());
+        priceTx.setText(model.getValueAt(row, 3).toString());
     }//GEN-LAST:event_productTableMouseClicked
 
     private void backButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_backButtonMouseClicked

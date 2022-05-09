@@ -5,7 +5,10 @@
  */
 package myshopmana;
 
+import java.util.ArrayList;
+import javax.swing.RowFilter;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
 
 /**
  *
@@ -18,6 +21,7 @@ public class ProductCashierForm extends javax.swing.JFrame {
      */
     public ProductCashierForm() {
         initComponents();
+        show_table();
     }
     
 
@@ -34,6 +38,8 @@ public class ProductCashierForm extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         productTable = new javax.swing.JTable();
         backButton = new javax.swing.JLabel();
+        searchPr = new javax.swing.JTextField();
+        jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -56,11 +62,28 @@ public class ProductCashierForm extends javax.swing.JFrame {
         productTable.setGridColor(new java.awt.Color(255, 255, 255));
         jScrollPane1.setViewportView(productTable);
 
-        jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 60, 760, 380));
+        jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 100, 770, 350));
 
         backButton.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         backButton.setText("<Back");
         jPanel1.add(backButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 10, -1, -1));
+
+        searchPr.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        searchPr.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                searchPrActionPerformed(evt);
+            }
+        });
+        searchPr.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                searchPrKeyReleased(evt);
+            }
+        });
+        jPanel1.add(searchPr, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 40, 170, 30));
+
+        jLabel1.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel1.setText("Search:");
+        jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 40, -1, 30));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -77,6 +100,33 @@ public class ProductCashierForm extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+    public void show_table(){
+        ProductForm pf = new ProductForm();
+        ArrayList<Product> products = pf.datalist();
+        DefaultTableModel model = (DefaultTableModel)productTable.getModel();
+        Object[] rows = new Object[6];
+        for(int i=0;i<products.size();i++){
+            rows[0] = products.get(i).getProductID();
+            rows[1] = products.get(i).getProductName();
+            rows[2] = products.get(i).getProductCategory();
+            rows[3] = products.get(i).getProductUnit();
+            rows[5] = products.get(i).getPrice();
+            rows[4] = products.get(i).getQuantity();
+            model.addRow(rows);
+        }
+    }
+    private void searchPrActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchPrActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_searchPrActionPerformed
+
+    private void searchPrKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_searchPrKeyReleased
+        // TODO add your handling code here:
+        String search = searchPr.getText();
+        DefaultTableModel model = (DefaultTableModel)productTable.getModel();
+        TableRowSorter trs = new TableRowSorter(model);
+        productTable.setRowSorter(trs);
+        trs.setRowFilter(RowFilter.regexFilter(search));
+    }//GEN-LAST:event_searchPrKeyReleased
 
     /**
      * @param args the command line arguments
@@ -115,8 +165,10 @@ public class ProductCashierForm extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel backButton;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private static javax.swing.JTable productTable;
+    private javax.swing.JTextField searchPr;
     // End of variables declaration//GEN-END:variables
 }
