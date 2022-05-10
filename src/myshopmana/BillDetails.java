@@ -9,31 +9,32 @@ package myshopmana;
  *
  * @author Admin
  */
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class BillDetails{
     private String billID;
-    private Product product;
-    private int amount;
-    public BillDetails(String billID,Product product,int amount){
+    private  ArrayList<Product> product;
+    private double amount;
+    public BillDetails(String billID,ArrayList<Product> product,double amount){
         this.billID = billID;
         this.product = product;
         this.amount = amount;
     }
 
-    public void setAmount(int amount) {
+    public void setAmount(double amount) {
         this.amount = amount;
     }
 
-    public int getAmount() {
+    public double getAmount() {
         return amount;
     }
 
-    public Product getProduct() {
+    public ArrayList<Product> getProduct() {
         return product;
     }
 
-    public void setProduct(Product product) {
+    public void setProduct(ArrayList<Product> product) {
         this.product = product;
     }
 

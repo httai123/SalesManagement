@@ -29,6 +29,7 @@ public class BillForm extends javax.swing.JFrame {
     /**
      * Creates new form BillForm
      */
+    public ArrayList<Product> products = new ArrayList<>();
     public BillForm() {
         initComponents();
         //show_table();
@@ -47,9 +48,9 @@ public class BillForm extends javax.swing.JFrame {
 //        for(int i=0;i<products.size();i++){
 //             row[0] = products.get(i).getProductID();
 //            row[1] = products.get(i).getProductName();
-//            row[2] = products.get(i).getProductCategory();
-//            row[3] = products.get(i).getProductUnit();
-//            row[5] = products.get(i).getPrice();
+//            row[5] = products.get(i).getProductCategory();
+//            row[2] = products.get(i).getProductUnit();
+//            row[3] = products.get(i).getPrice();
 //            row[4] = products.get(i).getQuantity();
 //            model.addRow(row);
 //        }
@@ -59,7 +60,7 @@ public class BillForm extends javax.swing.JFrame {
     public void update(){
         try{
             Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/salesmanager","root","");
-            String query = "UPDATE products SET productQuantity="+newQuantity+" where productID='"+productIDTX.getText()+"'";
+            String query = "UPDATE products SET productQuantity="+newQuantity+""+" where productID='"+productIDTX.getText()+"'";
             Statement st = connection.createStatement();
             st.executeUpdate(query);
             reloadTable();
@@ -77,6 +78,78 @@ public class BillForm extends javax.swing.JFrame {
             e.printStackTrace();
         }
     }
+     public ArrayList<BillDetails> datalist(){
+        DefaultTableModel model = (DefaultTableModel)productTable.getModel();
+        int row = productTable.getSelectedRow();
+        ArrayList<BillDetails> data = new ArrayList<>();
+        if(!billIDTX.getText().isEmpty()&& !productIDTX.getText().isEmpty() && !productNameTX.getText().isEmpty() && !quantityTX.getText().isEmpty()){
+        double amount = Double.valueOf(TotalVND.getText());
+        BillDetails billDetails = new BillDetails(billIDTX.getText(), products, amount);
+        data.add(billDetails);
+        }
+        return data;
+
+     }
+
+    /**
+     *
+     */
+    public void afterPrint(){
+         ArrayList<BillDetails> billDetailses = datalist();
+         try{
+             Connection connection1 = DriverManager.getConnection("jdbc:mysql://localhost/salesmanager","root","");
+             String query2 = "insert into reports(productID,productName,price,quantitySold,total)values(?,?,?,?,?)";
+             PreparedStatement pst1 = connection1.prepareStatement(query2);
+             pst1.setString(1, products.get(0).getProductID());
+             pst1.setString(2, products.get(0).getProductName());
+             pst1.setString(3, String.valueOf(products.get(0).getPrice()));
+             pst1.setString(4, String.valueOf(products.get(0).getQuantity()));
+             pst1.setString(5, String.valueOf(products.get(0).getTotal()));
+             for(int i = 1;i<products.size();i++){
+                 for(int j=0;j<i;j++){
+                 if(products.get(j).getProductID().equals(products.get(i).getProductID())){
+                     String query3 = "update reports set quantitySold = "+(products.get(i).getQuantity()
+                             +products.get(j).getQuantity()) + " where productID ='"+products.get(j).getProductID()+"'";
+                     Statement Add = connection1.createStatement();
+                     Add.executeUpdate(query3);
+                 } else {
+                    pst1.setString(1, products.get(i).getProductID());
+                    pst1.setString(2, products.get(i).getProductName());
+                    pst1.setString(3, String.valueOf(products.get(i).getPrice()));
+                    pst1.setString(4, String.valueOf(products.get(i).getQuantity()));
+                    pst1.setString(5, String.valueOf(products.get(i).getTotal()));
+                    int executeUpdate1 = pst1.executeUpdate();
+                    System.out.println("Hello");
+                 }
+                 }
+                 
+             }
+             
+         } catch(SQLException e){
+             JOptionPane.showMessageDialog(this, e);
+             e.printStackTrace();
+         }
+         try{
+             Connection connection1 = DriverManager.getConnection("jdbc:mysql://localhost/salesmanager","root","");
+             String query = "insert into billdetails(billID,billArea,amount)values(?,?,?)";
+             PreparedStatement pst = connection1.prepareStatement(query);
+             for(int i=0;i<billDetailses.size();i++){
+                 pst.setString(1, billDetailses.get(0).getBillID());
+                 pst.setString(2, billArea.getText());
+                 pst.setString(3, String.valueOf(billDetailses.get(i).getAmount()));
+                  int executeUpdate = pst.executeUpdate();
+             }
+             
+         } catch(SQLException e){
+             e.printStackTrace();
+         }
+         
+    }
+    public void afterAdd(){
+         
+         
+         
+     }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -372,6 +445,7 @@ int i =0;
             JOptionPane.showMessageDialog(this, "Not enough quantity");
         }
         else {
+            newQuantity = availableQuantity - Integer.valueOf(quantityTX.getText());
             total = Uprice*Double.valueOf(quantityTX.getText());
             GrdTotal += total;
             i++;
@@ -384,8 +458,11 @@ int i =0;
                 billArea.setText(billArea.getText()+"  "+i
                 +"       "+productIDTX.getText()+"     "+productNameTX.getText()+"    "+Uprice+"            "+quantityTX.getText()+"            "+sdf.format(date.getDate())+"    "+total+"\n");
             }
-            TotalVND.setText(GrdTotal+" VND");
+            TotalVND.setText(GrdTotal+"");
             update();
+            Product product = new Product(productIDTX.getText(),productNameTX.getText(),unit,cate,Uprice,Integer.valueOf(quantityTX.getText()));
+            products.add(product);
+            System.out.println(newQuantity);
         }
     }//GEN-LAST:event_addButtonMouseClicked
 
@@ -414,16 +491,18 @@ int i =0;
     }//GEN-LAST:event_cashierIDTXActionPerformed
     Double Uprice,total=0.0,GrdTotal=0.0;
     int availableQuantity;
+    String unit,cate;
     private void productTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_productTableMouseClicked
         // TODO add your handling code here:
         DefaultTableModel model = (DefaultTableModel)productTable.getModel();
         int row = productTable.getSelectedRow();
         Uprice = Double.valueOf(model.getValueAt(row, 3).toString());
         productIDTX.setText(model.getValueAt(row, 0).toString());
-        newID = model.getValueAt(row, 1).toString();
-        availableQuantity = Integer.valueOf(model.getValueAt(row, 4).toString());
-        newQuantity = availableQuantity - Integer.valueOf(quantityTX.getText());
         productNameTX.setText(model.getValueAt(row, 1).toString());
+        availableQuantity = Integer.valueOf(model.getValueAt(row, 4).toString());
+        newID = model.getValueAt(row, 1).toString();
+        unit = model.getValueAt(row, 2).toString();
+        cate = model.getValueAt(row, 5).toString();
 //        System.out.println(Uprice);
         
     }//GEN-LAST:event_productTableMouseClicked
@@ -433,9 +512,11 @@ int i =0;
     }//GEN-LAST:event_printButtonMouseEntered
 
     private void printButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_printButtonMouseClicked
+        afterPrint();
         try {
             // TODO add your handling code here:
             billArea.print();
+            
         } catch (PrinterException ex) {
             Logger.getLogger(BillForm.class.getName()).log(Level.SEVERE, null, ex);
         }

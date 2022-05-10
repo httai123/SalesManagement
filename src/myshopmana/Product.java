@@ -18,14 +18,14 @@ public class Product {
     private String productName;
     private String productUnit;
     private String productCategory;
-    private int price;
+    private double price;
     private int quantity;
 
     public Product() {
     }
 
     public Product(String productID, String productName, String productUnit,
-                   String productCategory, int price, int quantity) {
+                   String productCategory, double price, int quantity) {
         this.productID = productID;
         this.productName = productName;
         this.productUnit = productUnit;
@@ -81,7 +81,9 @@ public class Product {
     public void setProductUnit(String productUnit) {
         this.productUnit = productUnit;
     }
-
+    public double getTotal(){
+        return price*quantity;
+    }
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
