@@ -5,6 +5,8 @@
  */
 package myshopmana;
 
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.awt.print.PrinterException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -25,6 +27,9 @@ public class Report extends javax.swing.JFrame {
      */
     public Report() {
         initComponents();
+        Toolkit toolkit = getToolkit();
+        Dimension size = toolkit.getScreenSize();
+        setLocation(size.width/2-getWidth()/2,size.height/2-getHeight()/2);
         reloadTable();
     }
     public void reloadTable(){

@@ -4,6 +4,8 @@
  * and open the template in the editor.
  */
 package myshopmana;
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.sql.Statement;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -24,6 +26,9 @@ public class ProductForm extends javax.swing.JFrame {
      */
     public ProductForm() {
         initComponents();
+        Toolkit toolkit = getToolkit();
+        Dimension size = toolkit.getScreenSize();
+        setLocation(size.width/2-getWidth()/2,size.height/2-getHeight()/2);
 //        show_product();
         reloadTable();
     }

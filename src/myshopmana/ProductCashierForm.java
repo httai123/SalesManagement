@@ -5,6 +5,8 @@
  */
 package myshopmana;
 
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.util.ArrayList;
 import javax.swing.RowFilter;
 import javax.swing.table.DefaultTableModel;
@@ -21,6 +23,9 @@ public class ProductCashierForm extends javax.swing.JFrame {
      */
     public ProductCashierForm() {
         initComponents();
+        Toolkit toolkit = getToolkit();
+        Dimension size = toolkit.getScreenSize();
+        setLocation(size.width/2-getWidth()/2,size.height/2-getHeight()/2);
         show_table();
     }
     
@@ -66,6 +71,11 @@ public class ProductCashierForm extends javax.swing.JFrame {
 
         backButton.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         backButton.setText("<Back");
+        backButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                backButtonMouseClicked(evt);
+            }
+        });
         jPanel1.add(backButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 10, -1, -1));
 
         searchPr.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
@@ -127,6 +137,13 @@ public class ProductCashierForm extends javax.swing.JFrame {
         productTable.setRowSorter(trs);
         trs.setRowFilter(RowFilter.regexFilter(search));
     }//GEN-LAST:event_searchPrKeyReleased
+
+    private void backButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_backButtonMouseClicked
+        // TODO add your handling code here:
+        CashierForm cf = new CashierForm();
+        cf.setVisible(true);
+        this.setVisible(false);
+    }//GEN-LAST:event_backButtonMouseClicked
 
     /**
      * @param args the command line arguments

@@ -5,6 +5,8 @@
  */
 package myshopmana;
 
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.awt.print.PrinterException;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -33,6 +35,9 @@ public class BillForm extends javax.swing.JFrame {
     public BillForm() {
         initComponents();
         //show_table();
+        Toolkit toolkit = getToolkit();
+        Dimension size = toolkit.getScreenSize();
+        setLocation(size.width/2-getWidth()/2,size.height/2-getHeight()/2);
         reloadTable();
     }
     public void reset(){
@@ -118,7 +123,7 @@ public class BillForm extends javax.swing.JFrame {
                     pst1.setString(3, String.valueOf(products.get(i).getPrice()));
                     pst1.setString(4, String.valueOf(products.get(i).getQuantity()));
                     pst1.setString(5, String.valueOf(products.get(i).getTotal()));
-                    int executeUpdate1 = pst1.executeUpdate();
+//                    int executeUpdate1 = pst1.executeUpdate();
                     System.out.println("Hello");
                  }
                  }
@@ -358,6 +363,11 @@ public class BillForm extends javax.swing.JFrame {
         jButton1.setBackground(new java.awt.Color(204, 0, 255));
         jButton1.setFont(new java.awt.Font("Tahoma", 1, 10)); // NOI18N
         jButton1.setText("REFRESH");
+        jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton1MouseClicked(evt);
+            }
+        });
         jPanel1.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(680, 70, -1, 30));
 
         productTable.setModel(new javax.swing.table.DefaultTableModel(
@@ -473,8 +483,8 @@ int i =0;
 
     private void backButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_backButtonMouseClicked
         // TODO add your handling code here:
-        ManagerForm managerForm = new ManagerForm();
-        managerForm.setVisible(true);
+        CashierForm cf = new CashierForm();
+        cf.setVisible(true);
         this.setVisible(false);
     }//GEN-LAST:event_backButtonMouseClicked
 
@@ -512,7 +522,7 @@ int i =0;
     }//GEN-LAST:event_printButtonMouseEntered
 
     private void printButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_printButtonMouseClicked
-        afterPrint();
+        //afterPrint();
         try {
             // TODO add your handling code here:
             billArea.print();
@@ -521,6 +531,14 @@ int i =0;
             Logger.getLogger(BillForm.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_printButtonMouseClicked
+
+    private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
+        // TODO add your handling code here:
+        reset();
+        billArea.setText("");
+        billIDTX.setText("");
+        cashierIDTX.setText("");
+    }//GEN-LAST:event_jButton1MouseClicked
 
     /**
      * @param args the command line arguments

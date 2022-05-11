@@ -1,5 +1,8 @@
 package myshopmana;
 
+import java.awt.Dimension;
+import java.awt.Toolkit;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -17,6 +20,9 @@ public class CashierForm extends javax.swing.JFrame {
      */
     public CashierForm() {
         initComponents();
+        Toolkit toolkit = getToolkit();
+        Dimension size = toolkit.getScreenSize();
+        setLocation(size.width/2-getWidth()/2,size.height/2-getHeight()/2);
     }
 
     /**
@@ -104,6 +110,11 @@ public class CashierForm extends javax.swing.JFrame {
         jPanel7.setBackground(new java.awt.Color(255, 51, 51));
         jPanel7.setBorder(new javax.swing.border.MatteBorder(null));
         jPanel7.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jPanel7.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jPanel7MouseClicked(evt);
+            }
+        });
         jPanel7.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         productBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resource/images/product.png"))); // NOI18N
@@ -113,6 +124,11 @@ public class CashierForm extends javax.swing.JFrame {
         jPanel8.setBackground(new java.awt.Color(255, 51, 51));
         jPanel8.setBorder(new javax.swing.border.MatteBorder(null));
         jPanel8.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jPanel8.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jPanel8MouseClicked(evt);
+            }
+        });
         jPanel8.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         productBut1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resource/images/payment.png"))); // NOI18N
@@ -193,6 +209,20 @@ public class CashierForm extends javax.swing.JFrame {
     private void logOutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logOutActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_logOutActionPerformed
+
+    private void jPanel7MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel7MouseClicked
+        // TODO add your handling code here:
+        ProductCashierForm pcf = new ProductCashierForm();
+        pcf.setVisible(true);
+        this.setVisible(false);
+    }//GEN-LAST:event_jPanel7MouseClicked
+
+    private void jPanel8MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel8MouseClicked
+        // TODO add your handling code here:
+        BillForm bf = new BillForm();
+        bf.setVisible(true);
+        this.setVisible(false);
+    }//GEN-LAST:event_jPanel8MouseClicked
 
     /**
      * @param args the command line arguments
