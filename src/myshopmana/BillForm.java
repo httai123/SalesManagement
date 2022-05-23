@@ -99,41 +99,86 @@ public class BillForm extends javax.swing.JFrame {
     /**
      *
      */
+    
+//    public ResultSet find(String s){
+//        ResultSet rs = null;
+//        try{
+//            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/salesmanager","root","");
+//            String query = "select *from reports where productID = ?";
+//            PreparedStatement ps = connection.prepareStatement(query);
+//             rs = ps.executeQuery();
+//        } catch(Exception e){
+//            JOptionPane.showMessageDialog(this, e);
+//        }
+//        return rs;
+//    }
+//    public void addProductItem(){
+//        if()
+//    }i
+    public ArrayList<SoldProduct> report(){
+        ArrayList<SoldProduct> data = new ArrayList<>();
+        try{
+            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/salesmanager","root","");
+            String query = "SELECT * FROM reports";
+            java.sql.Statement st = connection.createStatement();
+            ResultSet rs = st.executeQuery(query);
+            SoldProduct report;
+            while(rs.next()){
+                report = new SoldProduct(rs.getString("productID"),rs.getString("productName"),rs.getDouble("price"),rs.getInt("quantitySold"),rs.getDouble("total"));
+                data.add(report);
+            }
+        } catch(Exception e){
+            JOptionPane.showMessageDialog(null, e);
+        }
+        return data;
+    }
+    public boolean checkExist(ArrayList<SoldProduct> s,String d){
+        for(int i = 0;i<s.size();i++){
+            if(d.equals(s.get(i).getProductId())){
+                return true;
+            }
+        }
+        return false;
+    }
+    public void afterAdd(){
+        ArrayList<SoldProduct> sp = report();
+        try{
+            Connection con = DriverManager.getConnection("jdbc:mysql://localhost/salesmanager","root","");
+            String query1 = "insert into reports(productID,productName,price,quantitySold,total)values(?,?,?,?,?)";
+            String query = "select quantitySold,total from reports where productID = '"+productIDTX.getText()+"'";
+            Statement st = con.createStatement();
+            ResultSet rs = st.executeQuery(query);
+            int currQuantity = 0;
+            double currTotal = 0.0;
+            while(rs.next()){
+                currQuantity = rs.getInt("quantitySold");
+                currTotal = rs.getDouble("total");
+            }
+            int totalQuantity = Integer.valueOf(quantityTX.getText()) + currQuantity;
+            double newTotal = currTotal + Uprice*Double.valueOf(quantityTX.getText());
+            PreparedStatement pst1 = con.prepareStatement(query1);
+            String query2 = "update reports set quantitySold="+totalQuantity+",total = "+newTotal+" where productID ='"+productIDTX.getText()+"'";
+            if(!billIDTX.getText().isEmpty()&& !productIDTX.getText().isEmpty() && !productNameTX.getText().isEmpty() && !quantityTX.getText().isEmpty()){
+                if(checkExist(sp, productIDTX.getText())){
+                     st.executeUpdate(query2);
+                } else {
+                    PreparedStatement pst = con.prepareStatement(query1);
+                    pst.setString(1, productIDTX.getText());
+                    pst.setString(2, productNameTX.getText());
+                    pst.setString(3, Uprice.toString());
+                    pst.setString(4, quantityTX.getText());
+                    pst.setString(5, String.valueOf(Uprice*Double.valueOf(quantityTX.getText())));
+                    int executeUpdate = pst.executeUpdate();
+                }
+            }
+        } catch(SQLException e){
+            JOptionPane.showMessageDialog(this, e);
+            e.printStackTrace();
+        }
+        
+    }
     public void afterPrint(){
-         ArrayList<BillDetails> billDetailses = datalist();
-         try{
-             Connection connection1 = DriverManager.getConnection("jdbc:mysql://localhost/salesmanager","root","");
-             String query2 = "insert into reports(productID,productName,price,quantitySold,total)values(?,?,?,?,?)";
-             PreparedStatement pst1 = connection1.prepareStatement(query2);
-             pst1.setString(1, products.get(0).getProductID());
-             pst1.setString(2, products.get(0).getProductName());
-             pst1.setString(3, String.valueOf(products.get(0).getPrice()));
-             pst1.setString(4, String.valueOf(products.get(0).getQuantity()));
-             pst1.setString(5, String.valueOf(products.get(0).getTotal()));
-             for(int i = 1;i<products.size();i++){
-                 for(int j=0;j<i;j++){
-                 if(products.get(j).getProductID().equals(products.get(i).getProductID())){
-                     String query3 = "update reports set quantitySold = "+(products.get(i).getQuantity()
-                             +products.get(j).getQuantity()) + " where productID ='"+products.get(j).getProductID()+"'";
-                     Statement Add = connection1.createStatement();
-                     Add.executeUpdate(query3);
-                 } else {
-                    pst1.setString(1, products.get(i).getProductID());
-                    pst1.setString(2, products.get(i).getProductName());
-                    pst1.setString(3, String.valueOf(products.get(i).getPrice()));
-                    pst1.setString(4, String.valueOf(products.get(i).getQuantity()));
-                    pst1.setString(5, String.valueOf(products.get(i).getTotal()));
-//                    int executeUpdate1 = pst1.executeUpdate();
-                    System.out.println("Hello");
-                 }
-                 }
-                 
-             }
-             
-         } catch(SQLException e){
-             JOptionPane.showMessageDialog(this, e);
-             e.printStackTrace();
-         }
+        ArrayList<BillDetails> billDetailses = datalist();
          try{
              Connection connection1 = DriverManager.getConnection("jdbc:mysql://localhost/salesmanager","root","");
              String query = "insert into billdetails(billID,billArea,amount)values(?,?,?)";
@@ -148,12 +193,6 @@ public class BillForm extends javax.swing.JFrame {
          } catch(SQLException e){
              e.printStackTrace();
          }
-         
-    }
-    public void afterAdd(){
-         
-         
-         
      }
     /**
      * This method is called from within the constructor to initialize the form.
@@ -473,6 +512,7 @@ int i =0;
             Product product = new Product(productIDTX.getText(),productNameTX.getText(),unit,cate,Uprice,Integer.valueOf(quantityTX.getText()));
             products.add(product);
             System.out.println(newQuantity);
+            afterAdd();
         }
     }//GEN-LAST:event_addButtonMouseClicked
 
@@ -522,7 +562,7 @@ int i =0;
     }//GEN-LAST:event_printButtonMouseEntered
 
     private void printButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_printButtonMouseClicked
-        //afterPrint();
+        afterPrint();
         try {
             // TODO add your handling code here:
             billArea.print();

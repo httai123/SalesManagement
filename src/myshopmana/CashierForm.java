@@ -60,7 +60,7 @@ public class CashierForm extends javax.swing.JFrame {
 
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resource/images/cs.png"))); // NOI18N
-        jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(-2, 5, 170, 80));
+        jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 20, 80, 60));
 
         jLabel2.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(255, 255, 0));
@@ -89,6 +89,11 @@ public class CashierForm extends javax.swing.JFrame {
         viewprofile1.setForeground(new java.awt.Color(255, 255, 255));
         viewprofile1.setText("View Profile");
         viewprofile1.setToolTipText("");
+        viewprofile1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                viewprofile1MouseClicked(evt);
+            }
+        });
         jPanel1.add(viewprofile1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 100, 110, 30));
 
         main.add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 170, 460));
@@ -223,6 +228,13 @@ public class CashierForm extends javax.swing.JFrame {
         bf.setVisible(true);
         this.setVisible(false);
     }//GEN-LAST:event_jPanel8MouseClicked
+
+    private void viewprofile1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_viewprofile1MouseClicked
+        // TODO add your handling code here:
+        CashierProfile cp = new CashierProfile();
+        cp.setVisible(true);
+        this.setVisible(false);
+    }//GEN-LAST:event_viewprofile1MouseClicked
 
     /**
      * @param args the command line arguments

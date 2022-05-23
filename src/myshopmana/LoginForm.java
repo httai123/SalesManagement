@@ -3,10 +3,14 @@ package myshopmana;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
 import javax.swing.JOptionPane;
 
 /*
@@ -33,6 +37,7 @@ public class LoginForm extends javax.swing.JFrame {
         Toolkit toolkit = getToolkit();
         Dimension size = toolkit.getScreenSize();
         setLocation(size.width/2-getWidth()/2,size.height/2-getHeight()/2);
+        reloadFile();
     }
 
     /**
@@ -86,6 +91,11 @@ public class LoginForm extends javax.swing.JFrame {
         LoginButton.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         LoginButton.setForeground(new java.awt.Color(0, 153, 204));
         LoginButton.setText("Login");
+        LoginButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                LoginButtonMouseClicked(evt);
+            }
+        });
         LoginButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 LoginButtonActionPerformed(evt);
@@ -178,6 +188,7 @@ public class LoginForm extends javax.swing.JFrame {
             resultSet = preparedStatement.executeQuery();
             if(resultSet.next()){
                 JOptionPane.showMessageDialog(this, "You are logined as "+resultSet.getString("usertype"));
+                writeUser();
                 if(typeLogin.getSelectedIndex() == 0){
                     ManagerForm adHome = new ManagerForm();
                     adHome.setVisible(true);
@@ -198,6 +209,28 @@ public class LoginForm extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_LoginButtonActionPerformed
 
+    private void LoginButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_LoginButtonMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_LoginButtonMouseClicked
+    
+    public void writeUser() throws FileNotFoundException{
+        try{
+            PrintWriter pw = new PrintWriter(new File("F:\\PROGRAMMING\\myShopMana\\src\\resource\\user.txt"));
+            pw.print(userName.getText());
+            pw.close();
+        } catch(Exception e){
+            System.out.println("Can't load file");
+        }
+    }
+    public void reloadFile(){
+         try{
+            PrintWriter pw = new PrintWriter(new File("F:\\PROGRAMMING\\myShopMana\\src\\resource\\user.txt"));
+            pw.print("");
+            pw.close();
+        } catch(Exception e){
+            System.out.println("Can't load file");
+        }
+    }
     /**
      * @param args the command line arguments
      */

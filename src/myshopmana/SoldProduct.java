@@ -12,23 +12,33 @@ package myshopmana;
 import java.util.Objects;
 
 public class SoldProduct {
-    private Product product;
+    private String productName;
+    private String productId;
+    private double price;
     private int quantitySold;
     private double totalSales;
-    public SoldProduct(Product product,int quantitySold,double totalSales){
-        this.product = product;
+    public SoldProduct(String productId,String productName,double price, int quantitySold,double totalSales){
+        this.productId = productId;
+        this.productName = productName;
+        this.price = price;
         this.quantitySold = quantitySold;
         this.totalSales = totalSales;
     }
 
-    public Product getProduct() {
-        return product;
+    public String getProductId() {
+        return productId;
     }
 
-    public void setProduct(Product product) {
-        this.product = product;
+    public void setProductId(String productId) {
+        this.productId = productId;
+    }
+    public String getProductName() {
+        return productName;
     }
 
+    public void setProductName(String productName) {
+        this.productName = productName;
+    }
     public double getTotalSales() {
         return totalSales;
     }
@@ -40,6 +50,13 @@ public class SoldProduct {
     public void setQuantitySold(int quantitySold) {
         this.quantitySold = quantitySold;
     }
+    public double getPrice() {
+        return price;
+    }
+
+    public void setQPrice(double price) {
+        this.price = price;
+    }
 
     public void setTotalSales(double totalSales) {
         this.totalSales = totalSales;
@@ -50,12 +67,12 @@ public class SoldProduct {
         if (this == o) return true;
         if (!(o instanceof SoldProduct)) return false;
         SoldProduct that = (SoldProduct) o;
-        return Objects.equals(product, that.product);
+        return Objects.equals(productId, that.productId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(product);
+        return Objects.hash(productId);
     }
 }
 

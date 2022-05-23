@@ -13,7 +13,11 @@ import java.util.logging.Logger;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
+import javax.swing.RowFilter;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
 import net.proteanit.sql.DbUtils;
 
 /**
@@ -31,6 +35,7 @@ public class Report extends javax.swing.JFrame {
         Dimension size = toolkit.getScreenSize();
         setLocation(size.width/2-getWidth()/2,size.height/2-getHeight()/2);
         reloadTable();
+        showData();
     }
     public void reloadTable(){
         try{
@@ -58,7 +63,13 @@ public class Report extends javax.swing.JFrame {
         printButton = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         reportTable = new javax.swing.JTable();
-        jTextField1 = new javax.swing.JTextField();
+        SearchTx = new javax.swing.JTextField();
+        totalsales = new javax.swing.JLabel();
+        totalProduct = new javax.swing.JLabel();
+        bestseller = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -91,7 +102,7 @@ public class Report extends javax.swing.JFrame {
                 printButtonMouseEntered(evt);
             }
         });
-        jPanel1.add(printButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 550, -1, -1));
+        jPanel1.add(printButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, 490, -1, -1));
 
         reportTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -101,16 +112,43 @@ public class Report extends javax.swing.JFrame {
                 "product ID", "product Name", "Price", "Quantity sold", "Total"
             }
         ));
+        reportTable.setGridColor(new java.awt.Color(204, 204, 255));
         jScrollPane1.setViewportView(reportTable);
 
-        jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 100, 760, -1));
+        jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 100, 760, 280));
 
-        jTextField1.addActionListener(new java.awt.event.ActionListener() {
+        SearchTx.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField1ActionPerformed(evt);
+                SearchTxActionPerformed(evt);
             }
         });
-        jPanel1.add(jTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 39, 170, 40));
+        SearchTx.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                SearchTxKeyReleased(evt);
+            }
+        });
+        jPanel1.add(SearchTx, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 39, 170, 40));
+
+        totalsales.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        jPanel1.add(totalsales, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 430, 90, 20));
+
+        totalProduct.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        jPanel1.add(totalProduct, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 460, 80, 20));
+
+        bestseller.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        jPanel1.add(bestseller, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 490, 90, 20));
+
+        jLabel5.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        jLabel5.setText("Best selling product:");
+        jPanel1.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 490, 110, 20));
+
+        jLabel6.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        jLabel6.setText("Total products sold:   ");
+        jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 460, 120, 20));
+
+        jLabel7.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        jLabel7.setText("Total sales : ");
+        jPanel1.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 430, -1, 20));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -146,10 +184,69 @@ public class Report extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_printButtonMouseEntered
 
-    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
+    private void SearchTxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SearchTxActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField1ActionPerformed
+    }//GEN-LAST:event_SearchTxActionPerformed
 
+    private void SearchTxKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_SearchTxKeyReleased
+        // TODO add your handling code here:
+        String search = SearchTx.getText();
+        DefaultTableModel model = (DefaultTableModel)reportTable.getModel();
+        TableRowSorter trs = new TableRowSorter(model);
+        reportTable.setRowSorter(trs);
+        trs.setRowFilter(RowFilter.regexFilter(search));
+    }//GEN-LAST:event_SearchTxKeyReleased
+    public void showSales(){
+        try{
+            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/salesmanager","root","");
+            String query = "select sum(total) as totalSales from reports";
+            Statement st = connection.createStatement();
+            ResultSet rs = st.executeQuery(query);
+            while(rs.next()){
+                totalsales.setText(rs.getString("totalSales"));
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+    public void showTotalProduct(){
+         try{
+            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/salesmanager","root","");
+            String query = "select count(productName) as totalProduct from reports";
+            Statement st = connection.createStatement();
+            ResultSet rs = st.executeQuery(query);
+            while(rs.next()){
+                totalProduct.setText(rs.getString("totalProduct"));
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+    public void showBestSelling(){
+        try{
+            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/salesmanager","root","");
+            String query = "SELECT productName, T\n" +
+"FROM (SELECT productName, SUM(quantitySold) AS T\n" +
+"             FROM reports\n" +
+"             GROUP BY productName) A\n" +
+"WHERE T IN (SELECT MAX(B.X) FROM(SELECT productName, SUM(quantitySold) AS X\n" +
+"                      FROM reports\n" +
+"                      GROUP BY productName) B)";
+            Statement st = connection.createStatement();
+            ResultSet rs = st.executeQuery(query);
+            while(rs.next()){
+                bestseller.setText(rs.getString("productName"));
+            }
+        } catch(SQLException e){
+            e.printStackTrace();
+        }
+        
+    }
+    public void showData(){
+        showTotalProduct();
+        showSales();
+        showBestSelling();
+    }
     /**
      * @param args the command line arguments
      */
@@ -186,12 +283,18 @@ public class Report extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextField SearchTx;
     private javax.swing.JLabel backButton;
+    private javax.swing.JLabel bestseller;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextField jTextField1;
     private javax.swing.JButton printButton;
     private javax.swing.JTable reportTable;
+    private javax.swing.JLabel totalProduct;
+    private javax.swing.JLabel totalsales;
     // End of variables declaration//GEN-END:variables
 }
