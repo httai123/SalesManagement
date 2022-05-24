@@ -41,9 +41,14 @@ public class BillForm extends javax.swing.JFrame {
         reloadTable();
     }
     public void reset(){
+        i =0;
         productIDTX.setText("");
         productNameTX.setText("");
         quantityTX.setText("0");
+        billArea.setText(null);
+        billIDTX.setText(null);
+        GrdTotal = 0.0;
+        TotalVND.setText(null);
     }
 //    public void show_table(){
 //        ProductForm pf = new ProductForm();
@@ -83,18 +88,18 @@ public class BillForm extends javax.swing.JFrame {
             e.printStackTrace();
         }
     }
-     public ArrayList<BillDetails> datalist(){
-        DefaultTableModel model = (DefaultTableModel)productTable.getModel();
-        int row = productTable.getSelectedRow();
-        ArrayList<BillDetails> data = new ArrayList<>();
-        if(!billIDTX.getText().isEmpty()&& !productIDTX.getText().isEmpty() && !productNameTX.getText().isEmpty() && !quantityTX.getText().isEmpty()){
-        double amount = Double.valueOf(TotalVND.getText());
-        BillDetails billDetails = new BillDetails(billIDTX.getText(), products, amount);
-        data.add(billDetails);
-        }
-        return data;
-
-     }
+//     public ArrayList<BillDetails> datalist(){
+//        DefaultTableModel model = (DefaultTableModel)productTable.getModel();
+//        int row = productTable.getSelectedRow();
+//        ArrayList<BillDetails> data = new ArrayList<>();
+//        if(!billIDTX.getText().isEmpty()&& !productIDTX.getText().isEmpty() && !productNameTX.getText().isEmpty() && !quantityTX.getText().isEmpty()){
+//        double amount = Double.valueOf(TotalVND.getText());
+//        BillDetails billDetails = new BillDetails(billIDTX.getText(), products, amount);
+//        data.add(billDetails);
+//        }
+//        return data;
+//
+//     }
 
     /**
      *
@@ -132,6 +137,74 @@ public class BillForm extends javax.swing.JFrame {
         }
         return data;
     }
+    public ArrayList<Bill> bills(){
+        ArrayList<Bill> data = new ArrayList<>();
+        try{
+            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/salesmanager","root","");
+            String query = "SELECT * FROM bills";
+            java.sql.Statement st = connection.createStatement();
+            ResultSet rs = st.executeQuery(query);
+            Bill bill;
+            while(rs.next()){
+                bill = new Bill(rs.getString("billID"),rs.getString("employeeID"),rs.getString("date"));
+                data.add(bill);
+            }
+        } catch(Exception e){
+            JOptionPane.showMessageDialog(null, e);
+        }
+        return data;
+    }
+    public ArrayList<BillDetails> detailses(){
+        ArrayList<BillDetails> data = new ArrayList<>();
+        try{
+            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/salesmanager","root","");
+            String query = "SELECT * FROM billdetails";
+            java.sql.Statement st = connection.createStatement();
+            ResultSet rs = st.executeQuery(query);
+            BillDetails sData;
+            while(rs.next()){
+                sData = new BillDetails(rs.getString("billID"),rs.getString("employeeID"),null,rs.getDouble("amount"));
+                data.add(sData);
+            }
+        } catch(Exception e){
+            JOptionPane.showMessageDialog(null, e);
+        }
+        return data;
+    }
+     public void updateData1(){
+        try{
+            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/salesmanager","root","");
+                int totalSale = 0;
+                String query = "select count(*) as total from billdetails where employeeID = '"+cashierIDTX.getText()+"'";
+                Statement st = connection.createStatement();
+                ResultSet rs = st.executeQuery(query);
+                while(rs.next()){
+                    totalSale = rs.getInt("total");
+                }
+                String query2 = "update salary set totalSales = "+totalSale+" where ID ='"+cashierIDTX.getText()+"'";
+                st.executeUpdate(query2);
+            
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+    }
+    public void updateData2(){
+        ArrayList<BillDetails> details = detailses();
+        try{
+            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/salesmanager","root","");
+                double additions = 0.0;
+                String query = "select sum(amount) as total from billdetails where employeeID = '"+cashierIDTX.getText()+"'";
+                Statement st = connection.createStatement();
+                ResultSet rs = st.executeQuery(query);
+                while(rs.next()){
+                    additions = rs.getDouble("total")*0.05;
+                }
+                String query2 = "update salary set additions = "+additions+" where ID ='"+cashierIDTX.getText()+"'";
+                st.executeUpdate(query2);
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
+    }
     public boolean checkExist(ArrayList<SoldProduct> s,String d){
         for(int i = 0;i<s.size();i++){
             if(d.equals(s.get(i).getProductId())){
@@ -140,6 +213,22 @@ public class BillForm extends javax.swing.JFrame {
         }
         return false;
     }
+    public void addToBill(){
+        try{
+            Connection con = DriverManager.getConnection("jdbc:mysql://localhost/salesmanager","root","");
+            String query = "insert into bills(billID,employeeID,date)values(?,?,?)";
+            PreparedStatement pst = con.prepareStatement(query);
+            pst.setString(1, billIDTX.getText());
+            pst.setString(2, cashierIDTX.getText());
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            String day = sdf.format(date.getDate());
+            pst.setString(3, day);
+            int excuteQuery = pst.executeUpdate();
+        } catch(SQLException e){
+            e.printStackTrace();
+        }
+    }
+    // Cong luong
     public void afterAdd(){
         ArrayList<SoldProduct> sp = report();
         try{
@@ -178,22 +267,20 @@ public class BillForm extends javax.swing.JFrame {
         
     }
     public void afterPrint(){
-        ArrayList<BillDetails> billDetailses = datalist();
          try{
              Connection connection1 = DriverManager.getConnection("jdbc:mysql://localhost/salesmanager","root","");
-             String query = "insert into billdetails(billID,billArea,amount)values(?,?,?)";
+             String query = "insert into billdetails(billID,employeeID,billArea,amount)values(?,?,?,?)";
              PreparedStatement pst = connection1.prepareStatement(query);
-             for(int i=0;i<billDetailses.size();i++){
-                 pst.setString(1, billDetailses.get(0).getBillID());
-                 pst.setString(2, billArea.getText());
-                 pst.setString(3, String.valueOf(billDetailses.get(i).getAmount()));
-                  int executeUpdate = pst.executeUpdate();
-             }
-             
+             pst.setString(1, billIDTX.getText());
+             pst.setString(2, cashierIDTX.getText());
+             pst.setString(3, billArea.getText());
+             pst.setDouble(4, GrdTotal);
+             int executeUpdate = pst.executeUpdate();
          } catch(SQLException e){
              e.printStackTrace();
          }
      }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -217,8 +304,6 @@ public class BillForm extends javax.swing.JFrame {
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
-        jPanel6 = new javax.swing.JPanel();
-        deleteButton = new javax.swing.JLabel();
         jPanel7 = new javax.swing.JPanel();
         addButton = new javax.swing.JLabel();
         jPanel8 = new javax.swing.JPanel();
@@ -226,7 +311,6 @@ public class BillForm extends javax.swing.JFrame {
         backButton = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         productTable = new javax.swing.JTable();
         CategoryTx = new javax.swing.JComboBox<>();
@@ -311,34 +395,6 @@ public class BillForm extends javax.swing.JFrame {
 
         jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 50, 340, 310));
 
-        jPanel6.setBackground(new java.awt.Color(224, 224, 242));
-
-        deleteButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resource/images/deleteIcon.png"))); // NOI18N
-        deleteButton.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        deleteButton.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                deleteButtonMouseClicked(evt);
-            }
-        });
-
-        javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
-        jPanel6.setLayout(jPanel6Layout);
-        jPanel6Layout.setHorizontalGroup(
-            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(deleteButton)
-                .addContainerGap())
-        );
-        jPanel6Layout.setVerticalGroup(
-            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel6Layout.createSequentialGroup()
-                .addComponent(deleteButton)
-                .addGap(0, 10, Short.MAX_VALUE))
-        );
-
-        jPanel1.add(jPanel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 380, 70, 60));
-
         jPanel7.setBackground(new java.awt.Color(224, 224, 242));
         jPanel7.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -367,10 +423,10 @@ public class BillForm extends javax.swing.JFrame {
         jPanel8.setLayout(jPanel8Layout);
         jPanel8Layout.setHorizontalGroup(
             jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel8Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(jPanel8Layout.createSequentialGroup()
+                .addContainerGap()
                 .addComponent(reloadButton)
-                .addContainerGap())
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel8Layout.setVerticalGroup(
             jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -379,7 +435,7 @@ public class BillForm extends javax.swing.JFrame {
                 .addComponent(reloadButton))
         );
 
-        jPanel1.add(jPanel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 380, 60, 50));
+        jPanel1.add(jPanel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 380, 60, 50));
 
         backButton.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         backButton.setText("<Back");
@@ -398,16 +454,6 @@ public class BillForm extends javax.swing.JFrame {
         jLabel3.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         jLabel3.setText("Filter By:");
         jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 80, -1, -1));
-
-        jButton1.setBackground(new java.awt.Color(204, 0, 255));
-        jButton1.setFont(new java.awt.Font("Tahoma", 1, 10)); // NOI18N
-        jButton1.setText("REFRESH");
-        jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jButton1MouseClicked(evt);
-            }
-        });
-        jPanel1.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(680, 70, -1, 30));
 
         productTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -480,10 +526,6 @@ public class BillForm extends javax.swing.JFrame {
     private void quantityTXActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_quantityTXActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_quantityTXActionPerformed
-
-    private void deleteButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_deleteButtonMouseClicked
-       
-    }//GEN-LAST:event_deleteButtonMouseClicked
 int i =0;
     private void addButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_addButtonMouseClicked
         // TODO add your handling code here:
@@ -562,7 +604,10 @@ int i =0;
     }//GEN-LAST:event_printButtonMouseEntered
 
     private void printButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_printButtonMouseClicked
+        addToBill();
         afterPrint();
+        updateData1();
+        updateData2();
         try {
             // TODO add your handling code here:
             billArea.print();
@@ -571,14 +616,6 @@ int i =0;
             Logger.getLogger(BillForm.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_printButtonMouseClicked
-
-    private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
-        // TODO add your handling code here:
-        reset();
-        billArea.setText("");
-        billIDTX.setText("");
-        cashierIDTX.setText("");
-    }//GEN-LAST:event_jButton1MouseClicked
 
     /**
      * @param args the command line arguments
@@ -624,8 +661,6 @@ int i =0;
     private javax.swing.JTextField billIDTX;
     private javax.swing.JTextField cashierIDTX;
     private com.toedter.calendar.JDateChooser date;
-    private javax.swing.JLabel deleteButton;
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -637,7 +672,6 @@ int i =0;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
     private javax.swing.JScrollPane jScrollPane1;

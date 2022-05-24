@@ -12,6 +12,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import javax.swing.JFrame;
@@ -40,6 +41,7 @@ public class AddCashier extends javax.swing.JFrame {
         emailText.setText("");
         IdText.setText("");
         phoneText2.setText("");
+        salaryTx.setText("");
     }
     public ArrayList<DataUser> datalist(){
         ArrayList<DataUser> data = new ArrayList<>();
@@ -52,7 +54,7 @@ public class AddCashier extends javax.swing.JFrame {
             while(rs.next()){
                 sData = new DataUser(rs.getString("userId"),rs.getString("username"), rs.getString("password"),rs.getString("usertype")
                         , rs.getString("dateOfBirth"), rs.getString("firstName"), rs.getString("lastName"), rs.getString("phoneNum"),
-                rs.getString("email"));
+                rs.getString("email"),rs.getDouble("basicSalary"));
                 data.add(sData);
             }
         } catch(Exception e){
@@ -103,6 +105,8 @@ public class AddCashier extends javax.swing.JFrame {
         jLabel11 = new javax.swing.JLabel();
         phoneText2 = new javax.swing.JTextField();
         jLabel12 = new javax.swing.JLabel();
+        salaryTx = new javax.swing.JTextField();
+        jLabel13 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -227,7 +231,7 @@ public class AddCashier extends javax.swing.JFrame {
         jLabel4.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         jLabel4.setForeground(new java.awt.Color(0, 204, 204));
         jLabel4.setText("Position:");
-        jPanel2.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, 90, -1, 20));
+        jPanel2.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, 80, -1, 20));
 
         jLabel5.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         jLabel5.setForeground(new java.awt.Color(0, 204, 204));
@@ -273,7 +277,7 @@ public class AddCashier extends javax.swing.JFrame {
 
         userType.setBackground(new java.awt.Color(0, 153, 153));
         userType.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Manager", "Cashier" }));
-        jPanel2.add(userType, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 90, 80, -1));
+        jPanel2.add(userType, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 80, 80, -1));
 
         jLabel8.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         jLabel8.setForeground(new java.awt.Color(0, 204, 204));
@@ -328,8 +332,22 @@ public class AddCashier extends javax.swing.JFrame {
 
         jLabel12.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         jLabel12.setForeground(new java.awt.Color(0, 204, 204));
-        jLabel12.setText("Phone Number:");
-        jPanel2.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 220, -1, -1));
+        jLabel12.setText("Basic Salary: ");
+        jPanel2.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(380, 270, -1, -1));
+
+        salaryTx.setBackground(new java.awt.Color(0, 153, 153));
+        salaryTx.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        salaryTx.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                salaryTxActionPerformed(evt);
+            }
+        });
+        jPanel2.add(salaryTx, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 260, 130, 30));
+
+        jLabel13.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel13.setForeground(new java.awt.Color(0, 204, 204));
+        jLabel13.setText("Phone Number:");
+        jPanel2.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 220, -1, -1));
 
         main.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 0, 630, 460));
 
@@ -380,9 +398,31 @@ public class AddCashier extends javax.swing.JFrame {
 
     private void addButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_addButtonMouseClicked
         // TODO add your handling code here:
+        addInfor();
+        addInfor2();
+    }//GEN-LAST:event_addButtonMouseClicked
+    public void addInfor2(){
         try{
             connection = DriverManager.getConnection("jdbc:mysql://localhost/salesmanager","root","");
-            String query = "insert into user(userId,username,password,usertype,dateOfBirth,firstName,lastName,phoneNum,email)values(?,?,?,?,?,?,?,?,?)";
+            String query2 = "insert into salary(ID,fullName,basicSalary,totalSales,additions)values(?,?,?,?,?)";
+            PreparedStatement pst2 = connection.prepareStatement(query2);
+            pst2.setString(1, IdText.getText());
+            String fullName = firstNameText.getText()+" "+lastNameText.getText();
+            pst2.setString(2, fullName);
+            pst2.setDouble(3, Double.valueOf(salaryTx.getText()));
+            pst2.setInt(4, 0);
+            pst2.setDouble(5, 0.0);
+            int excuteUpdate2 = pst2.executeUpdate();
+            JOptionPane.showMessageDialog(null, "Add successfully"); 
+        } catch(Exception e){
+            JOptionPane.showMessageDialog(null, e);
+            e.printStackTrace();
+        }
+    }
+    public void addInfor(){
+        try{
+            connection = DriverManager.getConnection("jdbc:mysql://localhost/salesmanager","root","");
+            String query = "insert into user(userId,username,password,usertype,dateOfBirth,firstName,lastName,phoneNum,email,basicSalary)values(?,?,?,?,?,?,?,?,?,?)";
             PreparedStatement pst = connection.prepareStatement(query);
             pst.setString(1, IdText.getText());
             pst.setString(2, usernameTx.getText());
@@ -395,8 +435,8 @@ public class AddCashier extends javax.swing.JFrame {
             pst.setString(7, lastNameText.getText());
             pst.setString(8, phoneText2.getText());
             pst.setString(9, emailText.getText());
+            pst.setDouble(10, Double.valueOf(salaryTx.getText()));
             int executeUpdate = pst.executeUpdate();
-            JOptionPane.showMessageDialog(null, "Add successfully");
             StaffForm.addRowToTable(new Object[]{
                 IdText.getText(),
                 firstNameText.getText(),
@@ -404,13 +444,15 @@ public class AddCashier extends javax.swing.JFrame {
                 String.valueOf(userType.getSelectedItem()),
                 date,
                 phoneText2.getText(),
-                emailText.getText()
+                emailText.getText(),
+                salaryTx.getText()
             });
-        } catch(Exception e){
+        } catch (SQLException e){
             JOptionPane.showMessageDialog(null, e);
+            e.printStackTrace();
         }
-    }//GEN-LAST:event_addButtonMouseClicked
-
+            
+    }
     private void reloadButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_reloadButtonMouseClicked
         // TODO add your handling code here:
         reset();
@@ -419,6 +461,10 @@ public class AddCashier extends javax.swing.JFrame {
     private void phoneText2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_phoneText2ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_phoneText2ActionPerformed
+
+    private void salaryTxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_salaryTxActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_salaryTxActionPerformed
 
     /**
      * @param args the command line arguments
@@ -466,6 +512,7 @@ public class AddCashier extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -485,6 +532,7 @@ public class AddCashier extends javax.swing.JFrame {
     private javax.swing.JPasswordField passwordText;
     private javax.swing.JTextField phoneText2;
     private javax.swing.JLabel reloadButton;
+    private javax.swing.JTextField salaryTx;
     private javax.swing.JComboBox<String> userType;
     private javax.swing.JTextField usernameTx;
     private javax.swing.JButton viewprofile1;

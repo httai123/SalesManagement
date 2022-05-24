@@ -14,9 +14,10 @@ import java.util.Objects;
 
 public class BillDetails{
     private String billID;
+    private String cashierID;
     private  ArrayList<Product> product;
     private double amount;
-    public BillDetails(String billID,ArrayList<Product> product,double amount){
+    public BillDetails(String billID,String cashierID,ArrayList<Product> product,double amount){
         this.billID = billID;
         this.product = product;
         this.amount = amount;
@@ -44,6 +45,13 @@ public class BillDetails{
 
     public void setBillID(String billID) {
         this.billID = billID;
+    }
+    public String getCashierID() {
+        return cashierID;
+    }
+
+    public void setCashierID(String billID) {
+        this.cashierID = cashierID;
     }
 
     @Override

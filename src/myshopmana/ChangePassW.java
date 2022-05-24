@@ -47,7 +47,8 @@ public class ChangePassW extends javax.swing.JFrame {
             DataUser user;
             while(rs.next()){
                 user = new DataUser(rs.getString("userId"),rs.getString("username"), rs.getString("password"), rs.getString("usertype")
-                        ,rs.getString("dateOfBirth"),rs.getString("firstName"),rs.getString("lastName"),rs.getString("phoneNum"),rs.getString("email"));
+                        ,rs.getString("dateOfBirth"),rs.getString("firstName"),rs.getString("lastName"),rs.getString("phoneNum")
+                        ,rs.getString("email"),rs.getDouble("basicSalary"));
                 data.add(user);
             }
         } catch(Exception e){

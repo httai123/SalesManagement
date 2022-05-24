@@ -175,7 +175,7 @@ public class StaffForm extends javax.swing.JFrame {
 
             },
             new String [] {
-                "ID", "First Name", "Last Name", "Position", "DOB", "Phone Num", "Email"
+                "ID", "First Name", "Last Name", "Position", "DOB", "Phone Num", "Email", "Salary"
             }
         ));
         staffListTable.setGridColor(new java.awt.Color(51, 255, 255));
@@ -252,7 +252,7 @@ public class StaffForm extends javax.swing.JFrame {
         AddCashier addCashier = new AddCashier();
         ArrayList<DataUser> data = addCashier.datalist();
         DefaultTableModel model = (DefaultTableModel)staffListTable.getModel();
-        Object[] row = new Object[7];
+        Object[] row = new Object[8];
         for(int i= 0;i<data.size();i++){
             row[0] = data.get(i).getId();
             row[1] = data.get(i).getFirstName();
@@ -261,6 +261,7 @@ public class StaffForm extends javax.swing.JFrame {
             row[4] = data.get(i).getDOB();
             row[5] = data.get(i).getPhoneNum();
             row[6] = data.get(i).getEmail();
+            row[7] = data.get(i).getSalary();
             model.addRow(row);
         }
     }

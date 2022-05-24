@@ -8,43 +8,33 @@ package myshopmana;
 import java.util.ArrayList;
 
 public class Bill {
-    private ArrayList<BillDetails> billDetails;
-    private String customerID;
-    private DataUser dataUsers;
+    private String billID;
+    private String cashierID;
     private String date;
-    public Bill(ArrayList<BillDetails> billDetailses, String customerID, DataUser dataUsers, String date){
-        this.customerID = customerID;
-        this.billDetails = billDetailses;
-        this.dataUsers = dataUsers;
+    public Bill(String billID, String cashierID, String date){
+        this.billID = this.billID;
+        this.cashierID = this.cashierID;
         this.date = date;
     }
 
-    public ArrayList<BillDetails> getBillDetails() {
-        return billDetails;
+    public String getBillID() {
+        return billID;
     }
 
-    public DataUser getDataUsers() {
-        return dataUsers;
+    public String getCashierID() {
+        return cashierID;
     }
 
     public String getDate() {
         return date;
     }
 
-    public String getCustomerID() {
-        return customerID;
+    public void setBillID(String billID) {
+        this.billID = billID;
     }
 
-    public void setBillDetails(ArrayList<BillDetails> billDetails) {
-        this.billDetails = billDetails;
-    }
-
-    public void setCustomerID(String customerID) {
-        this.customerID = customerID;
-    }
-
-    public void setDataUsers(DataUser dataUsers) {
-        this.dataUsers = dataUsers;
+    public void setCashierID(String id) {
+        this.cashierID = id;
     }
 
     public void setDate(String date) {

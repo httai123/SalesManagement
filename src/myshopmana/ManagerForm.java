@@ -159,6 +159,11 @@ public class ManagerForm extends javax.swing.JFrame {
 
         salaryBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resource/images/salary.png"))); // NOI18N
         salaryBut.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        salaryBut.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                salaryButMouseClicked(evt);
+            }
+        });
         jPanel5.add(salaryBut, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 0, -1, 80));
 
         jLabel7.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
@@ -202,6 +207,11 @@ public class ManagerForm extends javax.swing.JFrame {
 
         productBut1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resource/images/payment.png"))); // NOI18N
         productBut1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        productBut1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                productBut1MouseClicked(evt);
+            }
+        });
         jPanel8.add(productBut1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 0, -1, 80));
 
         jLabel9.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
@@ -298,7 +308,7 @@ public class ManagerForm extends javax.swing.JFrame {
             DataUser user;
             while(rs.next()){
                 user = new DataUser(rs.getString("userId"),rs.getString("username"), rs.getString("password"), rs.getString("usertype")
-                        ,rs.getString("dateOfBirth"),rs.getString("firstName"),rs.getString("lastName"),rs.getString("phoneNum"),rs.getString("email"));
+                        ,rs.getString("dateOfBirth"),rs.getString("firstName"),rs.getString("lastName"),rs.getString("phoneNum"),rs.getString("email"),rs.getDouble("basicSalary"));
                 data.add(user);
             }
         } catch(Exception e){
@@ -368,6 +378,20 @@ public class ManagerForm extends javax.swing.JFrame {
         report.setVisible(true);
         this.setVisible(false);
     }//GEN-LAST:event_reportButMouseClicked
+
+    private void salaryButMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_salaryButMouseClicked
+        // TODO add your handling code here:
+        SalaryFormy sf = new SalaryFormy();
+        sf.setVisible(true);
+        this.setVisible(false);
+    }//GEN-LAST:event_salaryButMouseClicked
+
+    private void productBut1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_productBut1MouseClicked
+        // TODO add your handling code here:
+        BillForm bf = new BillForm();
+        bf.setVisible(true);
+        this.setVisible(false);
+    }//GEN-LAST:event_productBut1MouseClicked
 
     /**
      * @param args the command line arguments

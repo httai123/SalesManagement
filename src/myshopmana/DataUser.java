@@ -13,9 +13,10 @@ public class DataUser {
     private String firstName,lastName,DOB,email,phoneNum,usertype;
     private String userName,password;
     private String id;
+    private double salary;
     //private int id;
     public DataUser(String id,String userName,String password,String usertype,String DOB,
-            String firstName,String lastName,String phoneNum,String email){
+            String firstName,String lastName,String phoneNum,String email,double salary){
         this.id = id;
         this.DOB = DOB;
         this.email = email;
@@ -25,6 +26,7 @@ public class DataUser {
         this.userName = userName;
         this.password = password;
         this.usertype = usertype;
+        this.salary = salary;
     }
     public DataUser(String userName,String password){
         this.userName = userName;
@@ -100,6 +102,13 @@ public class DataUser {
 
     public String getId() {
         return id;
+    }
+    public double getSalary() {
+        return salary;
+    }
+
+    public void setSalary(double salary) {
+        this.salary = salary;
     }
 
     @Override
