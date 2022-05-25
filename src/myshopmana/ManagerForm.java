@@ -65,9 +65,7 @@ public class ManagerForm extends javax.swing.JFrame {
         jPanel7 = new javax.swing.JPanel();
         productBut = new javax.swing.JLabel();
         jPanel8 = new javax.swing.JPanel();
-        productBut1 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
-        jLabel10 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -205,20 +203,8 @@ public class ManagerForm extends javax.swing.JFrame {
         jPanel8.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jPanel8.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        productBut1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resource/images/payment.png"))); // NOI18N
-        productBut1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        productBut1.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                productBut1MouseClicked(evt);
-            }
-        });
-        jPanel8.add(productBut1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 0, -1, 80));
-
         jLabel9.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         jLabel9.setText("Product");
-
-        jLabel10.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        jLabel10.setText("Payment");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -252,9 +238,7 @@ public class ManagerForm extends javax.swing.JFrame {
                         .addGap(98, 98, 98)
                         .addComponent(jLabel8)
                         .addGap(102, 102, 102)
-                        .addComponent(jLabel9)
-                        .addGap(105, 105, 105)
-                        .addComponent(jLabel10)))
+                        .addComponent(jLabel9)))
                 .addContainerGap(183, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
@@ -278,8 +262,7 @@ public class ManagerForm extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel8)
-                    .addComponent(jLabel9)
-                    .addComponent(jLabel10))
+                    .addComponent(jLabel9))
                 .addContainerGap(93, Short.MAX_VALUE))
         );
 
@@ -386,13 +369,6 @@ public class ManagerForm extends javax.swing.JFrame {
         this.setVisible(false);
     }//GEN-LAST:event_salaryButMouseClicked
 
-    private void productBut1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_productBut1MouseClicked
-        // TODO add your handling code here:
-        BillForm bf = new BillForm();
-        bf.setVisible(true);
-        this.setVisible(false);
-    }//GEN-LAST:event_productBut1MouseClicked
-
     /**
      * @param args the command line arguments
      */
@@ -432,7 +408,6 @@ public class ManagerForm extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel categoryBut;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel6;
@@ -450,7 +425,6 @@ public class ManagerForm extends javax.swing.JFrame {
     private javax.swing.JButton logOut;
     private javax.swing.JPanel main;
     private javax.swing.JLabel productBut;
-    private javax.swing.JLabel productBut1;
     private javax.swing.JLabel reportBut;
     private javax.swing.JLabel salaryBut;
     private javax.swing.JLabel staffBut;

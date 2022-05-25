@@ -8,6 +8,7 @@ package myshopmana;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.print.PrinterException;
+import java.io.File;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import java.sql.Statement;
@@ -18,6 +19,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.proteanit.sql.DbUtils;
@@ -39,6 +41,8 @@ public class BillForm extends javax.swing.JFrame {
         Dimension size = toolkit.getScreenSize();
         setLocation(size.width/2-getWidth()/2,size.height/2-getHeight()/2);
         reloadTable();
+        show_comboBox();
+        display();
     }
     public void reset(){
         i =0;
@@ -50,21 +54,30 @@ public class BillForm extends javax.swing.JFrame {
         GrdTotal = 0.0;
         TotalVND.setText(null);
     }
-//    public void show_table(){
-//        ProductForm pf = new ProductForm();
-//        ArrayList<Product> products = pf.datalist();
-//        DefaultTableModel model = (DefaultTableModel)productTable.getModel();
-//        Object[] row = new Object[6];
-//        for(int i=0;i<products.size();i++){
-//             row[0] = products.get(i).getProductID();
-//            row[1] = products.get(i).getProductName();
-//            row[5] = products.get(i).getProductCategory();
-//            row[2] = products.get(i).getProductUnit();
-//            row[3] = products.get(i).getPrice();
-//            row[4] = products.get(i).getQuantity();
-//            model.addRow(row);
-//        }
-//    }
+    /*
+     Ham lay thong tin gnuoi thanh toan
+    */
+    public ArrayList<String>idsList(){
+        ArrayList<String> id = new ArrayList<>();
+        try{
+            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/salesmanager","root","");
+            String query = "select * from user where usertype = 'Cashier'";
+            Statement st = connection.createStatement();
+            ResultSet rs = st.executeQuery(query);
+            while(rs.next()){
+                id.add(rs.getString("userId"));
+            }
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+        return id;
+    }
+    private void show_comboBox(){
+        ArrayList<String> ids = idsList();
+        for(String s : ids){
+            cashieeIDchoose.addItem(s);
+        }
+    }
     int newQuantity;
     String newID;
     public void update(){
@@ -88,38 +101,24 @@ public class BillForm extends javax.swing.JFrame {
             e.printStackTrace();
         }
     }
-//     public ArrayList<BillDetails> datalist(){
-//        DefaultTableModel model = (DefaultTableModel)productTable.getModel();
-//        int row = productTable.getSelectedRow();
-//        ArrayList<BillDetails> data = new ArrayList<>();
-//        if(!billIDTX.getText().isEmpty()&& !productIDTX.getText().isEmpty() && !productNameTX.getText().isEmpty() && !quantityTX.getText().isEmpty()){
-//        double amount = Double.valueOf(TotalVND.getText());
-//        BillDetails billDetails = new BillDetails(billIDTX.getText(), products, amount);
-//        data.add(billDetails);
-//        }
-//        return data;
-//
-//     }
-
-    /**
-     *
-     */
-    
-//    public ResultSet find(String s){
-//        ResultSet rs = null;
-//        try{
-//            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/salesmanager","root","");
-//            String query = "select *from reports where productID = ?";
-//            PreparedStatement ps = connection.prepareStatement(query);
-//             rs = ps.executeQuery();
-//        } catch(Exception e){
-//            JOptionPane.showMessageDialog(this, e);
-//        }
-//        return rs;
-//    }
-//    public void addProductItem(){
-//        if()
-//    }i
+     public void display(){
+        ProfileForm pf = new ProfileForm();
+        ArrayList<DataUser> users = pf.datalist();
+        String s = null;
+        try{
+            Scanner sc = new Scanner(new File("F:\\PROGRAMMING\\myShopMana\\src\\resource\\user.txt"));
+            while(sc.hasNext()){
+                s = sc.nextLine();
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        for(int i=0;i<users.size();i++){
+            if(s.equals(users.get(i).getUserName())){
+                cashieeIDchoose.setSelectedItem(users.get(i).getId());
+            }
+        }
+    }
     public ArrayList<SoldProduct> report(){
         ArrayList<SoldProduct> data = new ArrayList<>();
         try{
@@ -175,13 +174,13 @@ public class BillForm extends javax.swing.JFrame {
         try{
             Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/salesmanager","root","");
                 int totalSale = 0;
-                String query = "select count(*) as total from billdetails where employeeID = '"+cashierIDTX.getText()+"'";
+                String query = "select count(*) as total from billdetails where employeeID = '"+cashieeIDchoose.getSelectedItem().toString()+"'";
                 Statement st = connection.createStatement();
                 ResultSet rs = st.executeQuery(query);
                 while(rs.next()){
                     totalSale = rs.getInt("total");
                 }
-                String query2 = "update salary set totalSales = "+totalSale+" where ID ='"+cashierIDTX.getText()+"'";
+                String query2 = "update salary set totalSales = "+totalSale+" where ID ='"+cashieeIDchoose.getSelectedItem().toString()+"'";
                 st.executeUpdate(query2);
             
         } catch (SQLException e){
@@ -193,13 +192,13 @@ public class BillForm extends javax.swing.JFrame {
         try{
             Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/salesmanager","root","");
                 double additions = 0.0;
-                String query = "select sum(amount) as total from billdetails where employeeID = '"+cashierIDTX.getText()+"'";
+                String query = "select sum(amount) as total from billdetails where employeeID = '"+cashieeIDchoose.getSelectedItem().toString()+"'";
                 Statement st = connection.createStatement();
                 ResultSet rs = st.executeQuery(query);
                 while(rs.next()){
                     additions = rs.getDouble("total")*0.05;
                 }
-                String query2 = "update salary set additions = "+additions+" where ID ='"+cashierIDTX.getText()+"'";
+                String query2 = "update salary set additions = "+additions+" where ID ='"+cashieeIDchoose.getSelectedItem().toString()+"'";
                 st.executeUpdate(query2);
         }catch(SQLException e){
             e.printStackTrace();
@@ -219,7 +218,7 @@ public class BillForm extends javax.swing.JFrame {
             String query = "insert into bills(billID,employeeID,date)values(?,?,?)";
             PreparedStatement pst = con.prepareStatement(query);
             pst.setString(1, billIDTX.getText());
-            pst.setString(2, cashierIDTX.getText());
+            pst.setString(2, cashieeIDchoose.getSelectedItem().toString());
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             String day = sdf.format(date.getDate());
             pst.setString(3, day);
@@ -272,7 +271,7 @@ public class BillForm extends javax.swing.JFrame {
              String query = "insert into billdetails(billID,employeeID,billArea,amount)values(?,?,?,?)";
              PreparedStatement pst = connection1.prepareStatement(query);
              pst.setString(1, billIDTX.getText());
-             pst.setString(2, cashierIDTX.getText());
+             pst.setString(2, cashieeIDchoose.getSelectedItem().toString());
              pst.setString(3, billArea.getText());
              pst.setDouble(4, GrdTotal);
              int executeUpdate = pst.executeUpdate();
@@ -299,11 +298,11 @@ public class BillForm extends javax.swing.JFrame {
         productNameTX = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
         productIDTX = new javax.swing.JTextField();
-        cashierIDTX = new javax.swing.JTextField();
         date = new com.toedter.calendar.JDateChooser();
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
+        cashieeIDchoose = new javax.swing.JComboBox<>();
         jPanel7 = new javax.swing.JPanel();
         addButton = new javax.swing.JLabel();
         jPanel8 = new javax.swing.JPanel();
@@ -371,14 +370,6 @@ public class BillForm extends javax.swing.JFrame {
             }
         });
         jPanel2.add(productIDTX, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 120, 180, 30));
-
-        cashierIDTX.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        cashierIDTX.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cashierIDTXActionPerformed(evt);
-            }
-        });
-        jPanel2.add(cashierIDTX, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 70, 180, 30));
         jPanel2.add(date, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 270, -1, -1));
 
         jLabel6.setFont(new java.awt.Font("Tahoma", 1, 10)); // NOI18N
@@ -392,6 +383,9 @@ public class BillForm extends javax.swing.JFrame {
         jLabel8.setFont(new java.awt.Font("Tahoma", 1, 10)); // NOI18N
         jLabel8.setText("Cashier ID:");
         jPanel2.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 80, -1, 10));
+
+        cashieeIDchoose.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jPanel2.add(cashieeIDchoose, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 79, 90, 20));
 
         jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 50, 340, 310));
 
@@ -530,7 +524,7 @@ int i =0;
     private void addButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_addButtonMouseClicked
         // TODO add your handling code here:
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        if(quantityTX.getText().isEmpty() || billIDTX.getText().isEmpty() || cashierIDTX.getText().isEmpty()){
+        if(quantityTX.getText().isEmpty() || billIDTX.getText().isEmpty()){
             JOptionPane.showMessageDialog(this, "Missing informations");
         }else if(availableQuantity<=Integer.valueOf(quantityTX.getText())){
             JOptionPane.showMessageDialog(this, "Not enough quantity");
@@ -541,7 +535,7 @@ int i =0;
             GrdTotal += total;
             i++;
             if(i==1){
-                billArea.setText(billArea.getText()+"=========================  CIRCLE D  ==========================\n"+" CASHIER ID   "+cashierIDTX.getText()+"\n"+
+                billArea.setText(billArea.getText()+"=========================  CIRCLE D  ==========================\n"+" CASHIER ID   "+cashieeIDchoose.getSelectedItem().toString()+"\n"+
                         " BILL ID    "+billIDTX.getText()+"\n"+" NUM       ID       PRODUCT     PRICE     QUANTITY     DATE            TOTAL\n"+"  "+i
                 +"       "+productIDTX.getText()+"     "+productNameTX.getText()+"    "+Uprice+"            "+quantityTX.getText()+"            "+sdf.format(date.getDate())+"    "+total+"\n");
                 
@@ -577,10 +571,6 @@ int i =0;
     private void productIDTXActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_productIDTXActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_productIDTXActionPerformed
-
-    private void cashierIDTXActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cashierIDTXActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_cashierIDTXActionPerformed
     Double Uprice,total=0.0,GrdTotal=0.0;
     int availableQuantity;
     String unit,cate;
@@ -659,7 +649,7 @@ int i =0;
     private javax.swing.JLabel backButton;
     private javax.swing.JTextArea billArea;
     private javax.swing.JTextField billIDTX;
-    private javax.swing.JTextField cashierIDTX;
+    private javax.swing.JComboBox<String> cashieeIDchoose;
     private com.toedter.calendar.JDateChooser date;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;

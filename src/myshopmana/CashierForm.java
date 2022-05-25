@@ -2,6 +2,9 @@ package myshopmana;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Scanner;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -23,6 +26,7 @@ public class CashierForm extends javax.swing.JFrame {
         Toolkit toolkit = getToolkit();
         Dimension size = toolkit.getScreenSize();
         setLocation(size.width/2-getWidth()/2,size.height/2-getHeight()/2);
+        display();
     }
 
     /**
@@ -64,7 +68,6 @@ public class CashierForm extends javax.swing.JFrame {
 
         jLabel2.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(255, 255, 0));
-        jLabel2.setText("Cashier 01");
         jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 80, -1, -1));
 
         logOut.setBackground(new java.awt.Color(0, 0, 0));
@@ -107,6 +110,11 @@ public class CashierForm extends javax.swing.JFrame {
 
         salaryBut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resource/images/salary.png"))); // NOI18N
         salaryBut.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        salaryBut.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                salaryButMouseClicked(evt);
+            }
+        });
         jPanel5.add(salaryBut, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 10, -1, 80));
 
         jLabel7.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
@@ -236,6 +244,30 @@ public class CashierForm extends javax.swing.JFrame {
         this.setVisible(false);
     }//GEN-LAST:event_viewprofile1MouseClicked
 
+    private void salaryButMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_salaryButMouseClicked
+        // TODO add your handling code here:
+        ViewSalary vs = new ViewSalary();
+        vs.setVisible(true);
+        this.setVisible(false);
+    }//GEN-LAST:event_salaryButMouseClicked
+    public void display(){
+        ProfileForm pf = new ProfileForm();
+        ArrayList<DataUser> users = pf.datalist();
+        String s = null;
+        try{
+            Scanner sc = new Scanner(new File("F:\\PROGRAMMING\\myShopMana\\src\\resource\\user.txt"));
+            while(sc.hasNext()){
+                s = sc.nextLine();
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        for(int i=0;i<users.size();i++){
+            if(s.equals(users.get(i).getUserName())){
+                jLabel2.setText("Cashier "+users.get(i).getId());
+            }
+        }
+    }
     /**
      * @param args the command line arguments
      */
