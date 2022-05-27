@@ -7,12 +7,19 @@ package myshopmana;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.awt.print.PrinterException;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 /**
@@ -24,14 +31,22 @@ public class SalaryFormy extends javax.swing.JFrame {
     /**
      * Creates new form SalaryFormy
      */
+    private String id;
     public SalaryFormy() {
         initComponents();
         Toolkit toolkit = getToolkit();
         Dimension size = toolkit.getScreenSize();
         setLocation(size.width/2-getWidth()/2,size.height/2-getHeight()/2);
         show_table();
+       
     }
     // cong luong
+    public void setId(String id){
+        this.id = id;
+    }
+    public String getId(){
+        return id;
+    }
     public ArrayList<Salary> datalist(){
         ArrayList<Salary> data = new ArrayList<>();
         try{
@@ -67,6 +82,24 @@ public class SalaryFormy extends javax.swing.JFrame {
             model.addRow(rows);
         }
     }
+    public void writeUser(String id) throws FileNotFoundException{
+        try{
+            PrintWriter pw = new PrintWriter(new File("F:\\PROGRAMMING\\myShopMana\\src\\resource\\ID.txt"));
+            pw.print(id);
+            pw.close();
+        } catch(Exception e){
+            System.out.println("Can't load file");
+        }
+    }
+    public void reloadFile(){
+         try{
+            PrintWriter pw = new PrintWriter(new File("F:\\PROGRAMMING\\myShopMana\\src\\resource\\ID.txt"));
+            pw.print("");
+            pw.close();
+        } catch(Exception e){
+            System.out.println("Can't load file");
+        }
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -82,6 +115,7 @@ public class SalaryFormy extends javax.swing.JFrame {
         salaryTable = new javax.swing.JTable();
         PrintBtt = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
+        editbutton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -118,16 +152,35 @@ public class SalaryFormy extends javax.swing.JFrame {
 
         PrintBtt.setBackground(new java.awt.Color(0, 0, 204));
         PrintBtt.setText("PRINT");
+        PrintBtt.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                PrintBttMouseClicked(evt);
+            }
+        });
         PrintBtt.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 PrintBttActionPerformed(evt);
             }
         });
-        jPanel1.add(PrintBtt, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 400, -1, -1));
+        jPanel1.add(PrintBtt, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 400, -1, -1));
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         jLabel1.setText("Salary Report");
         jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 30, -1, -1));
+
+        editbutton.setBackground(new java.awt.Color(0, 0, 204));
+        editbutton.setText("EDIT");
+        editbutton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                editbuttonMouseClicked(evt);
+            }
+        });
+        editbutton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                editbuttonActionPerformed(evt);
+            }
+        });
+        jPanel1.add(editbutton, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, 400, -1, -1));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -154,12 +207,40 @@ public class SalaryFormy extends javax.swing.JFrame {
     
     private void salaryTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_salaryTableMouseClicked
         // TODO add your handling code here:
-        
+        DefaultTableModel model = (DefaultTableModel)salaryTable.getModel();
+        int row = salaryTable.getSelectedRow();
+        try {
+            writeUser(model.getValueAt(row, 0).toString());
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(SalaryFormy.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_salaryTableMouseClicked
 
     private void PrintBttActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PrintBttActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_PrintBttActionPerformed
+
+    private void PrintBttMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_PrintBttMouseClicked
+        // TODO add your handling code here:
+        try {
+            // TODO add your handling code here:
+            salaryTable.print();
+            
+        } catch (PrinterException ex) {
+            Logger.getLogger(BillForm.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_PrintBttMouseClicked
+
+    private void editbuttonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_editbuttonMouseClicked
+        // TODO add your handling code here:
+        EditSalary es = new EditSalary();
+        es.setVisible(true);
+        this.setVisible(false);
+    }//GEN-LAST:event_editbuttonMouseClicked
+
+    private void editbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editbuttonActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_editbuttonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -199,6 +280,7 @@ public class SalaryFormy extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton PrintBtt;
     private javax.swing.JLabel backButton;
+    private javax.swing.JButton editbutton;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane2;

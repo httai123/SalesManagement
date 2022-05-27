@@ -4,8 +4,8 @@
  * and open the template in the editor.
  */
 package myshopmana;
-import com.mysql.cj.protocol.Resultset;
-import com.mysql.cj.xdevapi.Statement;
+//import com.mysql.cj.protocol.Resultset;
+//import com.mysql.cj.xdevapi.Statement;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.sql.Connection;
